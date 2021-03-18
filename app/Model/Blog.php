@@ -83,7 +83,11 @@ class Blog extends Model
             ->addColumn('tags', function ($data) {                
                $as = BlogTags::tags($data->id); 
                return $as;     
-             })           
+             })
+             ->addColumn('description', function ($data) {                
+               $description = substr($data->description, 0, 100).'...';
+               return $description;     
+             })            
             ->addColumn('action', function ($data) {
                 if($data->user_id == Auth::user()->id){
                     $editLink = URL::to('/').'/admin/blog/'.$data->id.'/edit'; 
@@ -96,7 +100,7 @@ class Blog extends Model
                 
                return Helper::Action($editLink,$deleteLink,'');     
              }) 
-            ->rawColumns(['action','tags','image'])
+            ->rawColumns(['action','tags','image','description'])
             ->make(true);
     }
 
@@ -108,6 +112,10 @@ class Blog extends Model
         $searcharray = array();     
         parse_str($request->fromValues,$searcharray); 
         return Datatables::of($query)  
+            ->addColumn('description', function ($data) {                
+               $description = substr($data->description, 0, 100).'...';
+               return $description;     
+             })
             ->addColumn('image', function ($data) {
                return Helper::getImage($data->image);                
             })
@@ -116,7 +124,7 @@ class Blog extends Model
                return $as;     
              })          
             
-            ->rawColumns(['tags','image'])
+            ->rawColumns(['tags','image','description'])
             ->make(true);
     }
 }
